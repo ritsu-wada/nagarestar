@@ -62,7 +62,7 @@ pub fn setup_db(data_path: PathBuf) -> Result<Connection> {
             id INTEGER PRIMARY KEY,
             title TEXT NOT NULL,
             weight INTEGER NOT NULL,
-            positon INTEGER NOT NULL,
+            positon DATETIME NOT NULL,
         )",
         (),
     )?;
@@ -93,7 +93,7 @@ pub fn add_task(
     action: String,
     output: String,
     weight: i32,
-    process_id: Option<i32>,
+    process_id: i32,
 ) -> Result<()> {
     // 静的ステークホルダー、配列化タプルを渡すことができる
     conn.execute(

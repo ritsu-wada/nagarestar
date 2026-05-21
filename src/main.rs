@@ -41,15 +41,11 @@ fn main() {
             Target::All => {
                 let tree = make_tree(&conn);
                 print_all_task(tree);
-                let standalone_tasks = get_standalone_tasks(&conn);
-                print_standalone_tasks(standalone_tasks);
             }
             _ => {
                 let mut tree = make_tree(&conn);
                 eliminate_done(&mut tree);
                 print_all_task(tree);
-                let standalone_tasks = get_standalone_tasks(&conn);
-                print_standalone_tasks(standalone_tasks);
             }
         },
         // need to change

@@ -84,7 +84,7 @@ pub enum Actions {
         weight: i32,
         /// related Process's ID
         #[arg(short, long)]
-        process_id: Option<i32>,
+        process_id: i32,
     },
     Start {
         /// your target task's ID
@@ -147,20 +147,5 @@ pub fn print_all_task(tree: Vec<HopeBlock>) {
                 print_related_tasks(&task);
             }
         }
-    }
-}
-
-pub fn print_standalone_tasks(tasks: Vec<Task>) {
-    println!("=== Standalone Tasks ===");
-    let print_standalone_task = |task: &Task| {
-        println!("┌─[Task] ID: {} -", task.id);
-        println!("│  Title: {}", task.title);
-        println!("│  Input: {}", task.input);
-        println!("│  Action: {}", task.action);
-        println!("│  Output: {}", task.output);
-        println!("└  Weight: {}", task.weight);
-    };
-    for task in tasks.into_iter() {
-        print_standalone_task(&task);
     }
 }

@@ -84,14 +84,3 @@ pub fn make_tree(conn: &Connection) -> Vec<HopeBlock> {
 
     blocks
 }
-
-pub fn get_standalone_tasks(conn: &Connection) -> Vec<Task> {
-    let tasks: Vec<Task> = match get_tasks(&conn) {
-        Ok(tasks) => tasks,
-        Err(e) => {
-            eprintln!("Error: {}", e);
-            Vec::new()
-        }
-    };
-    tasks.into_iter().filter(|t| t.process_id == None).collect()
-}

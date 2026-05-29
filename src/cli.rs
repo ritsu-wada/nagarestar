@@ -15,14 +15,8 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Target {
-    #[command(alias = "h")]
-    Hope {
-        /// your target's id
-        #[arg(short, long)]
-        id: Option<i32>,
-    },
-    #[command(alias = "p")]
-    Process {
+    #[command(alias = "w")]
+    Wish {
         /// your target's id
         #[arg(short, long)]
         id: Option<i32>,
@@ -45,24 +39,14 @@ pub enum Actions {
         #[command(subcommand)]
         target: Target,
     },
-    /// add hope
-    #[command(alias = "ah",after_help = format!("Local now: {}", Local::now().date_naive() /* .to_rfc3339() */))]
-    AddHope {
+    /// add wish
+    #[command(alias = "aw",after_help = format!("Local now: {}", Local::now().date_naive() /* .to_rfc3339() */))]
+    AddWish {
         #[arg(short, long)]
         title: String,
         /// example 1995-08-01 2
         #[arg(short, long)]
         deadline: NaiveDate,
-    },
-    /// add process
-    #[command(alias = "ap")]
-    AddProcess {
-        /// the process's title
-        #[arg(short, long)]
-        title: String,
-        /// related hope's ID
-        #[arg(short, long)]
-        id: i32,
     },
     /// タスクの追加
     #[command(alias = "at")]
@@ -82,9 +66,9 @@ pub enum Actions {
         /// 1: 確実に1時間で終わる 2: 1時間で終わるだろうが不安 3: 未知の作業
         #[arg(short, long, default_value_t = 1)]
         weight: i32,
-        /// related Process's ID
+        /// related wish's ID
         #[arg(short, long)]
-        process_id: i32,
+        root_id: i32,
     },
     Start {
         /// your target task's ID
@@ -105,23 +89,15 @@ pub enum Actions {
     },
 }
 
-pub fn print_hope_list(hope_vec: Vec<Hope>) {
-    for hope in hope_vec {
-        println!("[Hope ID:{}]:", hope.id);
-        println!(" DeadLine: {}", hope.deadline);
-        println!(" TITLE: {}", hope.title);
+pub fn print_wishs(wish_vec: Vec<Wish>) {
+    for wish in wish_vec {
+        println!("[wish ID:{}]:", wish.id);
+        println!(" DeadLine: {}", wish.deadline);
+        println!(" TITLE: {}", wish.title);
     }
 }
 
-// pub fn print_one_hope(hope_block: HopeBlock) {
-//     let hope = hope_block.hope;
-//     println!("[Hope ID: {} Deadline: {}]", hope.id, hope.deadline);
-//     println!(" Title: {}", hope.title);
-
-// }
-
-pub fn print_all_task(tree: Vec<HopeBlock>) {
-    println!("=== Task Tree ===");
+pub fn print_all_task(tree: Vec<WishBlock>) {
     let print_related_tasks = |task: &Task| {
         println!("　　├─[Task] ID: {} -", task.id);
         println!("　　│  Title: {}", task.title);
@@ -130,22 +106,15 @@ pub fn print_all_task(tree: Vec<HopeBlock>) {
         println!("　　│  Output: {}", task.output);
         println!("　　└  Weight: {}", task.weight);
     };
-    let print_hope_block = |block: &HopeBlock| {
-        println!("[Hope ID:{}]:", block.hope.id);
-        println!(" DeadLine: {}", block.hope.deadline);
-        println!(" TITLE: {}", block.hope.title);
-    };
-    let print_process = |process: &Process| {
-        println!("　├─[Process] ID: {}", process.id);
-        println!("　└  Title: {}", process.title);
+    let print_wish_block = |block: &WishBlock| {
+        println!("[wish ID:{}]:", block.wish.id);
+        println!(" DeadLine: {}", block.wish.deadline);
+        println!(" TITLE: {}", block.wish.title);
     };
     for block in tree {
-        print_hope_block(&block);
-        for process_block in block.process {
-            print_process(&process_block.process);
-            for task in process_block.tasks {
-                print_related_tasks(&task);
-            }
+        print_wish_block(&block);
+        for task in block.tasks {
+            print_related_tasks(&task);
         }
     }
 }

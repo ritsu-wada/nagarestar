@@ -24,20 +24,10 @@ pub fn setup_db(data_path: PathBuf) -> Result<Connection> {
     let conn = Connection::open(data_path)?;
     conn.execute("PRAGMA foreign_keys = ON;", [])?;
     conn.execute(
-        "CREATE TABLE IF NOT EXISTS hopes (
+        "CREATE TABLE IF NOT EXISTS wishs (
             id INTEGER PRIMARY KEY,
             title TEXT NOT NULL,
             deadline DATETIME NOT NULL
-        )",
-        (),
-    )?;
-
-    conn.execute(
-        "CREATE TABLE IF NOT EXISTS processes (
-            id INTEGER PRIMARY KEY,
-            title TEXT NOT NULL,
-            hope_id INTEGER NOT NULL,
-            FOREIGN KEY (hope_id) REFERENCES hopes(id) ON DELETE CASCADE
         )",
         (),
     )?;
@@ -50,9 +40,9 @@ pub fn setup_db(data_path: PathBuf) -> Result<Connection> {
             action TEXT NOT NULL,
             output TEXT NOT NULL,
             weight INTEGER NOT NULL, 
-            process_id INTEGER NOT NULL,
+            root_id INTEGER NOT NULL,
             is_done BOOLEAN NOT NULL DEFAULT 0,
-            FOREIGN KEY (process_id) REFERENCES processes(id) ON DELETE CASCADE
+            FOREIGN KEY (root_id) REFERENCES wishs(id) ON DELETE CASCADE
         )",
         (),
     )?;
@@ -62,7 +52,7 @@ pub fn setup_db(data_path: PathBuf) -> Result<Connection> {
             id INTEGER PRIMARY KEY,
             title TEXT NOT NULL,
             weight INTEGER NOT NULL,
-            positon DATETIME NOT NULL,
+            positon DATETIME NOT NULL
         )",
         (),
     )?;
@@ -70,18 +60,10 @@ pub fn setup_db(data_path: PathBuf) -> Result<Connection> {
     Ok(conn)
 }
 
-pub fn add_hope(conn: &Connection, title: String, deadline: NaiveDate) -> Result<()> {
+pub fn add_wish(conn: &Connection, title: String, deadline: NaiveDate) -> Result<()> {
     conn.execute(
-        "INSERT INTO hopes (title, deadline) VALUES (?1, ?2)",
+        "INSERT INTO wishs (title, deadline) VALUES (?1, ?2)",
         (title, deadline),
-    )?;
-    Ok(())
-}
-
-pub fn add_process(conn: &Connection, title: String, hope_id: i32) -> Result<()> {
-    conn.execute(
-        "INSERT INTO processes (title, hope_id) VALUES (?1, ?2)",
-        (title, hope_id),
     )?;
     Ok(())
 }
@@ -93,19 +75,19 @@ pub fn add_task(
     action: String,
     output: String,
     weight: i32,
-    process_id: i32,
+    root_id: i32,
 ) -> Result<()> {
     // 静的ステークホルダー、配列化タプルを渡すことができる
     conn.execute(
-        "INSERT INTO tasks (title, input, action, output, weight, process_id) VALUES (?1,?2,?3,?4,?5,?6,?7)",
-        (title, input, action, output, weight,  process_id),
+        "INSERT INTO tasks (title, input, action, output, weight, root_id) VALUES (?1,?2,?3,?4,?5,?6)",
+        (title, input, action, output, weight, root_id),
     )?;
     Ok(())
 }
 
 pub fn get_tasks(conn: &Connection) -> Result<Vec<Task>> {
     let mut stmt = conn.prepare(
-        "SELECT id, title, input, action, output, weight, is_done, hope_id, process_id FROM tasks ORDER BY is_done ASC",
+        "SELECT id, title, input, action, output, weight, root_id, is_done FROM tasks ORDER BY is_done ASC",
     )?;
     let task_iter = stmt.query_map([], |row| {
         Ok(Task {
@@ -115,7 +97,7 @@ pub fn get_tasks(conn: &Connection) -> Result<Vec<Task>> {
             action: row.get(3)?,
             output: row.get(4)?,
             weight: row.get(5)?,
-            process_id: row.get(6)?,
+            root_id: row.get(6)?,
             is_done: row.get(7)?,
         })
     })?;
@@ -123,30 +105,17 @@ pub fn get_tasks(conn: &Connection) -> Result<Vec<Task>> {
     tasks
 }
 
-pub fn get_process(conn: &Connection) -> Result<Vec<Process>> {
-    let mut stmt = conn.prepare("SELECT id, title, hope_id FROM processes ORDER BY hope_id ASC")?;
-    let process_iter = stmt.query_map([], |row| {
-        Ok(Process {
-            id: row.get(0)?,
-            title: row.get(1)?,
-            hope_id: row.get(2)?,
-        })
-    })?;
-    let processes: Result<Vec<Process>> = process_iter.collect();
-    processes
-}
-
-pub fn get_hopes(conn: &Connection) -> Result<Vec<Hope>> {
-    let mut stmt = conn.prepare("SELECT id, title, deadline FROM hopes ORDER BY deadline ASC")?;
-    let hope_iter = stmt.query_map([], |row| {
-        Ok(Hope {
+pub fn get_wishs(conn: &Connection) -> Result<Vec<Wish>> {
+    let mut stmt = conn.prepare("SELECT id, title, deadline FROM wishs ORDER BY deadline ASC")?;
+    let wish_iter = stmt.query_map([], |row| {
+        Ok(Wish {
             id: row.get(0)?,
             title: row.get(1)?,
             deadline: row.get(2)?,
         })
     })?;
-    let hopes: Result<Vec<Hope>> = hope_iter.collect();
-    hopes
+    let wishs: Result<Vec<Wish>> = wish_iter.collect();
+    wishs
 }
 
 pub fn complete_task(conn: &Connection, id: i32) -> Result<()> {
@@ -158,11 +127,7 @@ pub fn delete_task(conn: &Connection, id: i32) -> Result<()> {
     conn.execute("DELETE FROM tasks WHERE id = (?1)", (id,))?;
     Ok(())
 }
-pub fn delete_process(conn: &Connection, id: i32) -> Result<()> {
-    conn.execute("DELETE FROM processes WHERE id = (?1)", (id,))?;
-    Ok(())
-}
-pub fn delete_hope(conn: &Connection, id: i32) -> Result<()> {
-    conn.execute("DELETE FROM hopes WHERE id = (?1)", (id,))?;
+pub fn delete_wish(conn: &Connection, id: i32) -> Result<()> {
+    conn.execute("DELETE FROM wishs WHERE id = (?1)", (id,))?;
     Ok(())
 }

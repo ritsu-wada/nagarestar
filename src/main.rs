@@ -24,15 +24,14 @@ fn main() {
     match args.actions {
         // need to change
         Actions::List { target } => match target {
-            Target::Hope { id } => match id {
+            Target::Wish { id } => match id {
                 Some(id_value) => {
                     let tree = make_tree(&conn);
-                    let mut hope_block = get_single_hope(id_value, tree);
-                    eliminate_done(&mut hope_block);
-                    print_all_task(hope_block);
+                    let wish_block = get_single_wish(id_value, tree);
+                    print_all_task(wish_block);
                 }
-                None => match get_hopes(&conn) {
-                    Ok(hope_vec) => print_hope_list(hope_vec),
+                None => match get_wishs(&conn) {
+                    Ok(wish_vec) => print_wishs(wish_vec),
                     Err(e) => {
                         println!("Error: {}", e);
                     }
@@ -49,13 +48,8 @@ fn main() {
             }
         },
         // need to change
-        Actions::AddHope { title, deadline } => {
-            if let Err(e) = add_hope(&conn, title, deadline) {
-                eprintln!("Error: {}", e);
-            }
-        }
-        Actions::AddProcess { title, id } => {
-            if let Err(e) = add_process(&conn, title, id) {
+        Actions::AddWish { title, deadline } => {
+            if let Err(e) = add_wish(&conn, title, deadline) {
                 eprintln!("Error: {}", e);
             }
         }
@@ -65,10 +59,10 @@ fn main() {
             action,
             output,
             weight,
-            process_id,
+            root_id,
         } => {
-            if let Err(e) = add_task(&conn, title, input, action, output, weight, process_id) {
-                println!("Error: {}", e);
+            if let Err(e) = add_task(&conn, title, input, action, output, weight, root_id) {
+                println!("Error1: {}", e);
             }
         }
         Actions::Start { id } => {
@@ -85,15 +79,9 @@ fn main() {
             }
         },
         Actions::Delete { target } => match target {
-            Target::Hope { id } => {
+            Target::Wish { id } => {
                 let value = id.expect(" need target's ID --id ");
-                if let Err(e) = delete_hope(&conn, value) {
-                    eprintln!("Error: {}", e);
-                }
-            }
-            Target::Process { id } => {
-                let value = id.expect(" need target's ID --id ");
-                if let Err(e) = delete_process(&conn, value) {
+                if let Err(e) = delete_wish(&conn, value) {
                     eprintln!("Error: {}", e);
                 }
             }

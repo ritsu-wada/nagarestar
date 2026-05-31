@@ -24,7 +24,7 @@ pub fn setup_db(data_path: PathBuf) -> Result<Connection> {
     let conn = Connection::open(data_path)?;
     conn.execute("PRAGMA foreign_keys = ON;", [])?;
     conn.execute(
-        "CREATE TABLE IF NOT EXISTS wishs (
+        "CREATE TABLE IF NOT EXISTS wishes (
             id INTEGER PRIMARY KEY,
             title TEXT NOT NULL,
             deadline DATETIME NOT NULL
@@ -42,7 +42,7 @@ pub fn setup_db(data_path: PathBuf) -> Result<Connection> {
             weight INTEGER NOT NULL, 
             root_id INTEGER NOT NULL,
             is_done BOOLEAN NOT NULL DEFAULT 0,
-            FOREIGN KEY (root_id) REFERENCES wishs(id) ON DELETE CASCADE
+            FOREIGN KEY (root_id) REFERENCES wishes(id) ON DELETE CASCADE
         )",
         (),
     )?;
@@ -51,8 +51,10 @@ pub fn setup_db(data_path: PathBuf) -> Result<Connection> {
         "CREATE TABLE IF NOT EXISTS routines (
             id INTEGER PRIMARY KEY,
             title TEXT NOT NULL,
+            time DATETIME NOT NULL,
             weight INTEGER NOT NULL,
-            positon DATETIME NOT NULL
+            root_id INTEGER,
+            FOREIGN KEY (root_id) REFERENCES wishes(id)
         )",
         (),
     )?;
@@ -62,7 +64,7 @@ pub fn setup_db(data_path: PathBuf) -> Result<Connection> {
 
 pub fn add_wish(conn: &Connection, title: String, deadline: NaiveDate) -> Result<()> {
     conn.execute(
-        "INSERT INTO wishs (title, deadline) VALUES (?1, ?2)",
+        "INSERT INTO wishes (title, deadline) VALUES (?1, ?2)",
         (title, deadline),
     )?;
     Ok(())
@@ -105,8 +107,8 @@ pub fn get_tasks(conn: &Connection) -> Result<Vec<Task>> {
     tasks
 }
 
-pub fn get_wishs(conn: &Connection) -> Result<Vec<Wish>> {
-    let mut stmt = conn.prepare("SELECT id, title, deadline FROM wishs ORDER BY deadline ASC")?;
+pub fn get_wishes(conn: &Connection) -> Result<Vec<Wish>> {
+    let mut stmt = conn.prepare("SELECT id, title, deadline FROM wishes ORDER BY deadline ASC")?;
     let wish_iter = stmt.query_map([], |row| {
         Ok(Wish {
             id: row.get(0)?,
@@ -114,8 +116,8 @@ pub fn get_wishs(conn: &Connection) -> Result<Vec<Wish>> {
             deadline: row.get(2)?,
         })
     })?;
-    let wishs: Result<Vec<Wish>> = wish_iter.collect();
-    wishs
+    let wishes: Result<Vec<Wish>> = wish_iter.collect();
+    wishes
 }
 
 pub fn complete_task(conn: &Connection, id: i32) -> Result<()> {
@@ -128,6 +130,6 @@ pub fn delete_task(conn: &Connection, id: i32) -> Result<()> {
     Ok(())
 }
 pub fn delete_wish(conn: &Connection, id: i32) -> Result<()> {
-    conn.execute("DELETE FROM wishs WHERE id = (?1)", (id,))?;
+    conn.execute("DELETE FROM wishes WHERE id = (?1)", (id,))?;
     Ok(())
 }

@@ -30,8 +30,8 @@ fn main() {
                     let wish_block = get_single_wish(id_value, tree);
                     print_all_task(wish_block);
                 }
-                None => match get_wishs(&conn) {
-                    Ok(wish_vec) => print_wishs(wish_vec),
+                None => match get_wishes(&conn) {
+                    Ok(wish_vec) => print_wishes(wish_vec),
                     Err(e) => {
                         println!("Error: {}", e);
                     }

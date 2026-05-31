@@ -15,8 +15,8 @@ pub fn eliminate_done(tree: &mut Vec<WishBlock>) {
 }
 
 pub fn make_tree(conn: &Connection) -> Vec<WishBlock> {
-    let wishs: Vec<Wish> = match get_wishs(&conn) {
-        Ok(wishs) => wishs,
+    let wishes: Vec<Wish> = match get_wishes(&conn) {
+        Ok(wishes) => wishes,
         Err(e) => {
             eprintln!("Error: {}", e);
             Vec::new()
@@ -29,7 +29,7 @@ pub fn make_tree(conn: &Connection) -> Vec<WishBlock> {
             Vec::new()
         }
     };
-    let blocks: Vec<WishBlock> = wishs
+    let blocks: Vec<WishBlock> = wishes
         .into_iter()
         .map(|wish| {
             let related_tasks = tasks

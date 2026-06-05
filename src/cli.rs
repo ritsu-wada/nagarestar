@@ -37,7 +37,7 @@ pub enum Actions {
     #[command(alias = "ls")] // alias for list
     List {
         #[command(subcommand)]
-        target: Target,
+        target: Option<Target>,
     },
     /// add wish
     #[command(alias = "aw",after_help = format!("Local now: {}", Local::now().date_naive() /* .to_rfc3339() */))]
@@ -91,8 +91,7 @@ pub enum Actions {
 
 pub fn print_wishes(wish_vec: Vec<Wish>) {
     for wish in wish_vec {
-        println!("[wish ID:{}]:", wish.id);
-        println!(" DeadLine: {}", wish.deadline);
+        println!("[wish ID:{}]:DeadLine: {}", wish.id, wish.deadline);
         println!(" TITLE: {}", wish.title);
     }
 }

@@ -24,20 +24,20 @@ fn main() {
     match args.actions {
         // need to change
         Actions::List { target } => match target {
-            Target::Wish { id } => match id {
-                Some(id_value) => {
+            Some(Target::Wish { id }) => match id {
+                Some(id) => {
                     let tree = make_tree(&conn);
-                    let wish_block = get_single_wish(id_value, tree);
+                    let wish_block = get_single_wish(id, tree);
                     print_all_task(wish_block);
                 }
-                None => match get_wishes(&conn) {
+                _ => match get_wishes(&conn) {
                     Ok(wish_vec) => print_wishes(wish_vec),
                     Err(e) => {
                         println!("Error: {}", e);
                     }
                 },
             },
-            Target::All => {
+            Some(Target::All) => {
                 let tree = make_tree(&conn);
                 print_all_task(tree);
             }

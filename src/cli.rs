@@ -91,22 +91,22 @@ pub enum Actions {
 
 pub fn print_wishes(wish_vec: Vec<Wish>) {
     for wish in wish_vec {
-        println!("[wish ID:{}]:DeadLine: {}", wish.id, wish.deadline);
+        println!("[ID:{} wish]:DeadLine: {}", wish.id, wish.deadline);
         println!(" TITLE: {}", wish.title);
     }
 }
 
 pub fn print_all_task(tree: Vec<WishBlock>) {
     let print_related_tasks = |task: &Task| {
-        println!("　　├─[Task] ID: {} -", task.id);
-        println!("　　│  Title: {}", task.title);
-        println!("　　│  Input: {}", task.input);
-        println!("　　│  Action: {}", task.action);
-        println!("　　│  Output: {}", task.output);
-        println!("　　└  Weight: {}", task.weight);
+        println!("　　　├─[Task] ID: {} -", task.id);
+        println!("　　　│  Title: {}", task.title);
+        println!("　　　│  Input: {}", task.input);
+        println!("　　　│  Action: {}", task.action);
+        println!("　　　│  Output: {}", task.output);
+        println!("　　　└  Weight: {}", task.weight);
     };
     let print_wish_block = |block: &WishBlock| {
-        println!("[wish ID:{}]:", block.wish.id);
+        println!("[ID:{} wish]:", block.wish.id);
         println!(" DeadLine: {}", block.wish.deadline);
         println!(" TITLE: {}", block.wish.title);
     };

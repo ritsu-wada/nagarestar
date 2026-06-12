@@ -42,9 +42,9 @@ fn main() {
                 print_all_task(tree);
             }
             _ => {
-                let mut tree = make_tree(&conn);
-                eliminate_done(&mut tree);
-                print_all_task(tree);
+                let tree = make_tree(&conn);
+                calc_next_todo(tree);
+                prin
             }
         },
         // need to change

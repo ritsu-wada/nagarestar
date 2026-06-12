@@ -4,6 +4,16 @@ use rusqlite::Connection;
 use super::db::*;
 use super::models::*;
 
+// 現時点ではdbから期限が近い物順にデータが来ること
+// を前提としているため日付を見るようにする必要がある
+pub fn calc_next_todo(tree: Vec<WishBlock>) -> Option<Task> {
+    let task: Option<Task> = match tree.first() {
+        Some(wish_block) => wish_block.tasks.iter().find(|t| !t.is_done).cloned(),
+        None => None,
+    };
+    task
+}
+
 pub fn get_single_wish(id: i32, tree: Vec<WishBlock>) -> Vec<WishBlock> {
     tree.into_iter().filter(|t| t.wish.id == id).collect()
 }
@@ -14,6 +24,7 @@ pub fn eliminate_done(tree: &mut Vec<WishBlock>) {
     }
 }
 
+// make data include all of data
 pub fn make_tree(conn: &Connection) -> Vec<WishBlock> {
     let wishes: Vec<Wish> = match get_wishes(&conn) {
         Ok(wishes) => wishes,

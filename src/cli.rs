@@ -92,7 +92,7 @@ pub enum Actions {
 pub fn print_wishes(wish_vec: Vec<Wish>) {
     for wish in wish_vec {
         println!("[ID:{} wish]:DeadLine: {}", wish.id, wish.deadline);
-        println!(" TITLE: {}", wish.title);
+        println!("　　TITLE: {}", wish.title);
     }
 }
 

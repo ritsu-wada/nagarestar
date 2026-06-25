@@ -42,9 +42,12 @@ fn main() {
                 print_all_task(tree);
             }
             _ => {
-                let tree = make_tree(&conn);
-                calc_next_todo(tree);
-                prin
+                let mut tree = make_tree(&conn);
+                eliminate_done(&mut tree);
+                let next_task = calc_next_todo(tree);
+                if let Some(task) = next_task {
+                    print_task(task);
+                }
             }
         },
         // need to change

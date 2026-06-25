@@ -62,6 +62,41 @@ pub fn setup_db(data_path: PathBuf) -> Result<Connection> {
     Ok(conn)
 }
 
+pub fn edit_wish(
+    conn: &Connection,
+    target_id: i32,
+    title: String,
+    deadline: NaiveDate,
+) -> Result<()> {
+    conn.execute(
+        "UPDATE wish
+         SET title = ?1,
+             deadline = ?2,
+         WHERE id = ?3",
+        (title, deadline, target_id),
+    )?;
+    Ok(())
+}
+
+pub fn edit_task(
+    conn: &Connection,
+    title: String,
+    input: String,
+    action: String,
+    output: String,
+    weight: i32,
+    target_id: i32,
+) -> Result<()> {
+    // 静的ステークホルダー、配列化タプルを渡すことができる
+    conn.execute(
+        "UPDATE tasks
+         SET title = ?1, input = ?2, action = ?3, output = ?4, weight = ?5,
+         WHERE id = ?6",
+        (title, input, action, output, weight, target_id),
+    )?;
+    Ok(())
+}
+
 pub fn add_wish(conn: &Connection, title: String, deadline: NaiveDate) -> Result<()> {
     conn.execute(
         "INSERT INTO wishes (title, deadline) VALUES (?1, ?2)",

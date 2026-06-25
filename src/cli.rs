@@ -96,6 +96,15 @@ pub fn print_wishes(wish_vec: Vec<Wish>) {
     }
 }
 
+pub fn print_task(task: Task) {
+    println!("├─[Task] ID: {} -", task.id);
+    println!("│  Title: {}", task.title);
+    println!("│  Input: {}", task.input);
+    println!("│  Action: {}", task.action);
+    println!("│  Output: {}", task.output);
+    println!("└  Weight: {}", task.weight);
+}
+
 pub fn print_all_task(tree: Vec<WishBlock>) {
     let print_related_tasks = |task: &Task| {
         println!("　　　├─[Task] ID: {} -", task.id);

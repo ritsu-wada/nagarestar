@@ -9,3 +9,4 @@ clap = { version = "4.4", features = ["derive"] }
 rusqlite = { version = "0.38.0", features = ["chrono","bundled"] }
 chrono = {version = "0.4", features = ["serde"] }
 directories = "6.0.0"
+inquire = "0.9.4"

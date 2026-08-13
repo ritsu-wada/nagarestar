@@ -7,6 +7,7 @@ use calc::*;
 use clap::Parser;
 use cli::*;
 use db::*;
+use inquire::Text;
 
 fn main() {
     if cfg!(debug_assertions) {
@@ -99,5 +100,15 @@ fn main() {
                 println!("Sorry I cant sport that function")
             }
         },
+        Actions::Ctl => {
+            let test = Text::new("This is a test context")
+                .with_default("Ritsu")
+                .with_help_message("Please type some message")
+                .prompt();
+            match test {
+                Ok(context) => println!("this is your context {}", context),
+                Err(_) => println!("Error"),
+            }
+        }
     }
 }

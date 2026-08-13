@@ -87,6 +87,8 @@ pub enum Actions {
         #[command(subcommand)]
         target: Target,
     },
+    /// start ctl
+    Ctl,
 }
 
 pub fn print_wishes(wish_vec: Vec<Wish>) {

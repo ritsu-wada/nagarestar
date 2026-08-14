@@ -80,12 +80,12 @@ pub fn edit_wish(
 
 pub fn edit_task(
     conn: &Connection,
+    target_id: i32,
     title: String,
     input: String,
     action: String,
     output: String,
     weight: i32,
-    target_id: i32,
 ) -> Result<()> {
     // 静的ステークホルダー、配列化タプルを渡すことができる
     conn.execute(

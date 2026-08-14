@@ -81,6 +81,27 @@ pub enum Actions {
         #[arg(short, long)]
         id: i32,
     },
+    /// edit
+    Edit {
+        /// related wish's ID
+        #[arg(short, long)]
+        root_id: i32,
+        /// タスクのタイトル
+        #[arg(short, long)]
+        title: String,
+        /// 準備、必要なもの場所
+        #[arg(short, long)]
+        input: String,
+        /// 何をする作業？
+        #[arg(short, long)]
+        action: String,
+        /// 何がゴール？
+        #[arg(short, long)]
+        output: String,
+        /// 1: 確実に1時間で終わる 2: 1時間で終わるだろうが不安 3: 未知の作業
+        #[arg(short, long, default_value_t = 1)]
+        weight: i32,
+    },
     /// delete data
     #[command(alias = "d")]
     Delete {

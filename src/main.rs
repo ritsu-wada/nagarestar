@@ -66,7 +66,7 @@ fn main() {
             root_id,
         } => {
             if let Err(e) = add_task(&conn, title, input, action, output, weight, root_id) {
-                println!("Error1: {}", e);
+                println!("Error: {}", e);
             }
         }
         Actions::Start { id } => {
@@ -82,6 +82,18 @@ fn main() {
                 eprintln!("Error: {}", e);
             }
         },
+        Actions::Edit {
+            root_id,
+            title,
+            input,
+            action,
+            output,
+            weight,
+        } => {
+            if let Err(e) = edit_task(&conn, root_id, title, input, action, output, weight) {
+                println!("Error: {}", e);
+            }
+        }
         Actions::Delete { target } => match target {
             Target::Wish { id } => {
                 let value = id.expect(" need target's ID --id ");

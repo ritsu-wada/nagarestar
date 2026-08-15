@@ -4,6 +4,7 @@ mod db;
 mod models;
 
 use calc::*;
+use chrono::NaiveDate;
 use clap::Parser;
 use cli::*;
 use db::*;
@@ -113,12 +114,15 @@ fn main() {
             }
         },
         Actions::Ctl => {
-            let test = Text::new("This is a test context")
-                .with_default("Ritsu")
-                .with_help_message("Please type some message")
+            // let title = Text::new("please tell me your wish ? *~")
+            //     .with_default("Ritsu")
+            //     .with_help_message("Please type some message")
+            //     .prompt();
+            let title = Text::new("hi im nagarestar !")
+                .with_help_message("please tell me your wish ? *~")
                 .prompt();
-            match test {
-                Ok(context) => println!("this is your context {}", context),
+            match title {
+                Ok(context) => println!("your wish is *{}*", context),
                 Err(_) => println!("Error"),
             }
         }

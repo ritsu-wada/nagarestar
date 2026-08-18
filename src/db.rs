@@ -35,27 +35,31 @@ pub fn setup_db(data_path: PathBuf) -> Result<Connection> {
     conn.execute(
         "CREATE TABLE IF NOT EXISTS tasks (
             id INTEGER PRIMARY KEY,
+            root_id INTEGER NOT NULL,
             title TEXT NOT NULL,
+
             input TEXT NOT NULL,
             action TEXT NOT NULL,
             output TEXT NOT NULL,
+
+            not_to_do TEXT,
+            scheduled_at TEXT,
             weight INTEGER NOT NULL, 
-            root_id INTEGER NOT NULL,
-            is_done BOOLEAN NOT NULL DEFAULT 0,
+
             FOREIGN KEY (root_id) REFERENCES wishes(id) ON DELETE CASCADE
         )",
         (),
     )?;
 
     conn.execute(
-        "CREATE TABLE IF NOT EXISTS routines (
-            id INTEGER PRIMARY KEY,
-            title TEXT NOT NULL,
-            time DATETIME NOT NULL,
-            weight INTEGER NOT NULL,
-            root_id INTEGER,
-            FOREIGN KEY (root_id) REFERENCES wishes(id)
-        )",
+        "
+            CREATE TABLE IF NOT EXISTS done_task {
+                id INTEGER PRIMARY KEY,
+                root_id INTEGER NOT NULL,
+                title TEXT NOT NULL,
+                completed_at DATETIME NOT NULL,
+            }
+        ",
         (),
     )?;
 
@@ -78,21 +82,19 @@ pub fn edit_wish(
     Ok(())
 }
 
-pub fn edit_task(
-    conn: &Connection,
-    target_id: i32,
-    title: String,
-    input: String,
-    action: String,
-    output: String,
-    weight: i32,
-) -> Result<()> {
+pub fn edit_task(conn: &Connection, task: Task) -> Result<()> {
     // 静的ステークホルダー、配列化タプルを渡すことができる
     conn.execute(
         "UPDATE tasks
          SET title = ?1, input = ?2, action = ?3, output = ?4, weight = ?5,
          WHERE id = ?6",
-        (title, input, action, output, weight, target_id),
+        (
+            task.title,
+            task.input,
+            task.action,
+            task.output,
+            task.weight,
+        ),
     )?;
     Ok(())
 }
@@ -105,19 +107,11 @@ pub fn add_wish(conn: &Connection, title: String, deadline: NaiveDate) -> Result
     Ok(())
 }
 
-pub fn add_task(
-    conn: &Connection,
-    title: String,
-    input: String,
-    action: String,
-    output: String,
-    weight: i32,
-    root_id: i32,
-) -> Result<()> {
+pub fn add_task(conn: &Connection, task: Task) -> Result<()> {
     // 静的ステークホルダー、配列化タプルを渡すことができる
     conn.execute(
         "INSERT INTO tasks (title, input, action, output, weight, root_id) VALUES (?1,?2,?3,?4,?5,?6)",
-        (title, input, action, output, weight, root_id),
+        (),
     )?;
     Ok(())
 }
@@ -129,13 +123,16 @@ pub fn get_tasks(conn: &Connection) -> Result<Vec<Task>> {
     let task_iter = stmt.query_map([], |row| {
         Ok(Task {
             id: row.get(0)?,
-            title: row.get(1)?,
-            input: row.get(2)?,
-            action: row.get(3)?,
-            output: row.get(4)?,
-            weight: row.get(5)?,
-            root_id: row.get(6)?,
-            is_done: row.get(7)?,
+            root_id: row.get(1)?,
+            title: row.get(2)?,
+
+            input: row.get(3)?,
+            action: row.get(4)?,
+            output: row.get(5)?,
+
+            not_to_do: row.get(6)?,
+            scheduled_at: row.get(7)?,
+            weight: row.get(8)?,
         })
     })?;
     let tasks: Result<Vec<Task>> = task_iter.collect();

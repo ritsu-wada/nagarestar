@@ -4,7 +4,6 @@ mod db;
 mod models;
 
 use calc::*;
-use chrono::NaiveDate;
 use clap::Parser;
 use cli::*;
 use db::*;

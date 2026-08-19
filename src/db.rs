@@ -4,6 +4,15 @@ use std::path::PathBuf;
 
 use super::models::*;
 
+// 外部から呼び出せるように
+// #[macro_export]
+
+// macro_rules! {
+//     () => {
+
+//     };
+// }
+
 pub fn get_db_path() -> PathBuf {
     #[cfg(not(debug_assertions))]
     {

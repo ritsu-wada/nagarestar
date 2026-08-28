@@ -4,8 +4,8 @@ use chrono::prelude::*;
 pub struct Wish {
     pub id: i32,
     pub title: String,
-    pub deadline: Option<NaiveDate>, // 期限なし・遠い目標も許容するため Option 推奨
-                                     //pub why: Option<String>,         // 「なぜこれを叶えたいか（動機）」があると挫折しにくい
+    pub deadline: Option<NaiveDate>,
+    pub priority: i32, // 優先度、聞くときはやらなきゃいけないことかやりたいことか着たほうがいい
 }
 
 #[derive(Clone, Debug)]
@@ -20,7 +20,7 @@ pub struct Task {
     pub output: String,        // 終わり・完了条件
 
     // --- 無気力・先延ばし対策（行動科学の要素） ---
-    pub not_to_do: Option<String>,    // やらないこと
+    pub not_to_do: Option<String>, // やらないこと,ここまではやらなくていい、やったら行けない妨げ
     pub scheduled_at: Option<String>, // いつやるか
 
     // --- 重みと状態 ---

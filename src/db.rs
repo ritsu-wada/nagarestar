@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use rusqlite::{Connection, Result};
 use std::path::PathBuf;
 
@@ -209,6 +210,28 @@ pub fn get_wishes(conn: &Connection) -> Result<Vec<Wish>> {
     })?;
     let wishes: Result<Vec<Wish>> = wish_iter.collect();
     wishes
+}
+
+pub fn get_done_tasks(conn: &Connection) -> Result<Vec<DoneTask>> {
+    let mut stmt = conn.prepare("SELECT id, root_id, title, completed_at")?;
+    let done_task_iter = stmt.query_map([], |row| {
+        Ok(DoneTask {
+            id: row.get(0)?,
+            root_id: row.get(1)?,
+            title: row.get(2)?,
+            completed_at: row.get(3)?,
+        })
+    })?;
+    let done_tasks: Result<Vec<DoneTask>> = done_task_iter.collect();
+    done_tasks
+}
+
+pub fn complete_task(conn: &Connection, task: Task, time: DateTime<Utc>) -> Result<()> {
+    conn.execute(
+        "INSERT INTO done_tasks (root_id, title, completed_at) VALUES (?1,?2,?3)",
+        (task.root_id, task.title, time),
+    )?;
+    Ok(())
 }
 
 pub fn delete_task(conn: &Connection, id: i32) -> Result<()> {

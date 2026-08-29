@@ -18,12 +18,6 @@ pub fn get_single_wish(id: i32, tree: Vec<WishBlock>) -> Vec<WishBlock> {
     tree.into_iter().filter(|t| t.wish.id == id).collect()
 }
 
-pub fn eliminate_done(tree: &mut Vec<WishBlock>) {
-    for wish_block in tree.into_iter() {
-        wish_block.tasks.retain(|t| !t.is_done);
-    }
-}
-
 // make data include all of data
 pub fn make_tree(conn: &Connection) -> Vec<WishBlock> {
     let wishes: Vec<Wish> = match get_wishes(&conn) {

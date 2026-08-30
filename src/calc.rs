@@ -8,7 +8,7 @@ use super::models::*;
 // を前提としているため日付を見るようにする必要がある
 pub fn calc_next_todo(tree: Vec<WishBlock>) -> Option<Task> {
     let task: Option<Task> = match tree.first() {
-        Some(wish_block) => wish_block.tasks.iter().find(|t| !t.is_done).cloned(),
+        Some(wish_block) => wish_block.tasks.first().cloned(),
         None => None,
     };
     task

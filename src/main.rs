@@ -44,7 +44,6 @@ fn main() {
             }
             _ => {
                 let mut tree = make_tree(&conn);
-                eliminate_done(&mut tree);
                 let next_task = calc_next_todo(tree);
                 if let Some(task) = next_task {
                     print_task(task);
